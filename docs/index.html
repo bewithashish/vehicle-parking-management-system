@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Parking Management System - Group 12</title>
+  <style>
+    :root {
+      --primary: #1E293B;
+      --primary-accent: #2563EB;
+      --free-color: #2E7D32;
+      --free-hover: #388E3C;
+      --occupied-color: #C62828;
+      --occupied-hover: #D32F2F;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      color: #FFFFFF;
+      padding: 20px 24px;
+      border-bottom: 3px solid var(--primary-accent);
+    }
+    .banner-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .banner-titles h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .banner-titles p {
+      font-size: 0.85rem;
+      color: #94A3B8;
+    }
+    .banner-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-download {
+      display: inline-block;
+      background-color: var(--primary-accent);
+      color: #FFFFFF;
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    .btn-download:hover {
+      background-color: #1D4ED8;
+    }
+    .btn-reset {
+      background-color: transparent;
+      color: #CBD5E1;
+      border: 1px solid #475569;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover {
+      background-color: #334155;
+      color: #FFFFFF;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+
+    /* Header Occupancy Bar */
+    .occupancy-bar {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .bar-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .badge-counts {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary-accent);
+    }
+
+    /* Tab Navigation */
+    .tabs-nav {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--text);
+    }
+    .tab-btn.active {
+      color: var(--primary-accent);
+      border-bottom-color: var(--primary-accent);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Card Box */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+
+    /* Legend Box */
+    .legend-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      background-color: #F1F5F9;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: #FFFFFF;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+    .badge-available { background-color: var(--free-color); }
+    .badge-occupied { background-color: var(--occupied-color); }
+
+    /* Slot Grids */
+    .slot-section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+    }
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 640px) {
+      .slots-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .slot-cell {
+      height: 52px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, background-color 0.15s, box-shadow 0.15s;
+    }
+    .slot-cell:active {
+      transform: scale(0.97);
+    }
+    .slot-cell.free {
+      background-color: var(--free-color);
+    }
+    .slot-cell.free:hover {
+      background-color: var(--free-hover);
+      box-shadow: 0 2px 6px rgba(46,125,50,0.4);
+    }
+    .slot-cell.occupied {
+      background-color: var(--occupied-color);
+    }
+    .slot-cell.occupied:hover {
+      background-color: var(--occupied-hover);
+      box-shadow: 0 2px 6px rgba(198,40,40,0.4);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+      max-width: 480px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+    .form-group .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .btn-submit {
+      background-color: var(--primary-accent);
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .btn-submit:hover {
+      background-color: #1D4ED8;
+    }
+
+    /* Stats Grid */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 600px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .stat-card {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background-color: #F1F5F9;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    th:hover {
+      background-color: #E2E8F0;
+    }
+    tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    /* Modal Dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15,23,42,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 8px;
+      max-width: 480px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .modal-body {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .receipt-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed #E2E8F0;
+    }
+    .receipt-total {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary-accent);
+      border-top: 2px solid var(--border);
+      border-bottom: none;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Banner -->
+  <header class="top-banner">
+    <div class="banner-inner">
+      <div class="banner-titles">
+        <h1>Web demo of the Java Swing Vehicle Parking Management System - Group 12</h1>
+        <p>Team: Ashish (Leader, UID 2510001259), Samar (2510001222), Chandni (2510001296), Lakshay (2510001216) | Course: CSE2003 OOP using JAVA</p>
+      </div>
+      <div class="banner-actions">
+        <a id="downloadJarBtn" href="https://github.com/akash-kumar-2005/vehicle-parking-management-system/releases/latest" class="btn-download" target="_blank">Download Desktop App (JAR)</a>
+        <button id="resetDemoBtn" class="btn-reset" onclick="resetDemoData()">Reset demo data</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Live Header Occupancy Counter -->
+    <div class="occupancy-bar">
+      <span class="bar-title">Real-Time Parking Capacity</span>
+      <span class="badge-counts" id="occupancyCounter">Free 25 / Occupied 0 / Total 25</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('entry')">Entry</button>
+      <button class="tab-btn" onclick="switchTab('exit')">Exit</button>
+      <button class="tab-btn" onclick="switchTab('config')">Slot Config</button>
+      <button class="tab-btn" onclick="switchTab('report')">Report</button>
+    </nav>
+
+    <!-- Tab 1: Dashboard -->
+    <section id="pane-dashboard" class="tab-pane active">
+      <div class="card">
+        <div class="legend-box">
+          <span class="badge-pill badge-available">Available</span>
+          <span class="badge-pill badge-occupied">Occupied</span>
+          <span style="color: var(--text-muted);">Click a slot for details | Double-click occupied slot to check-out</span>
+        </div>
+
+        <div class="slot-section">
+          <div class="section-title">
+            <span>Bike Slots (Rs. 10/hr)</span>
+            <span id="bikeCountSummary" style="font-size: 0.85rem; color: var(--text-muted);">10 slots</span>
+          </div>
+          <div id="bikeGrid" class="slots-grid"></div>
+        </div>
+
+        <div class="slot-section">
+          <div class="section-title">
+            <span>Car Slots (Rs. 20/hr)</span>
+            <span id="carCountSummary" style="font-size: 0.85rem; color: var(--text-muted);">10 slots</span>
+          </div>
+          <div id="carGrid" class="slots-grid"></div>
+        </div>
+
+        <div class="slot-section">
+          <div class="section-title">
+            <span>Truck Slots (Rs. 40/hr)</span>
+            <span id="truckCountSummary" style="font-size: 0.85rem; color: var(--text-muted);">5 slots</span>
+          </div>
+          <div id="truckGrid" class="slots-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Entry -->
+    <section id="pane-entry" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Park a New Vehicle</h2>
+        <form onsubmit="handleParkSubmit(event)">
+          <div class="form-group">
+            <label for="entryPlate">Vehicle Registration Number</label>
+            <input type="text" id="entryPlate" placeholder="e.g. PB65AB1234, DL01C1234" required>
+            <div class="hint">Format: 2-letter state + 1-2 digits + 1-3 letters + 4 digits</div>
+          </div>
+          <div class="form-group">
+            <label for="entryOwner">Vehicle Owner Name</label>
+            <input type="text" id="entryOwner" placeholder="e.g. John Doe" required>
+            <div class="hint">2 to 50 characters, letters, dots, and spaces only</div>
+          </div>
+          <div class="form-group">
+            <label for="entryType">Vehicle Type</label>
+            <select id="entryType">
+              <option value="BIKE">Bike (Two-wheeler - Rs. 10/hr)</option>
+              <option value="CAR" selected>Car (Four-wheeler - Rs. 20/hr)</option>
+              <option value="TRUCK">Truck (Heavy vehicle - Rs. 40/hr)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-submit">Park Vehicle</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Tab 3: Exit -->
+    <section id="pane-exit" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Process Vehicle Departure</h2>
+        <form onsubmit="handleExitSubmit(event)">
+          <div class="form-group">
+            <label for="exitQuery">Vehicle Number or Ticket ID</label>
+            <input type="text" id="exitQuery" placeholder="e.g. PB65AB1234 or ticket ID 1" required>
+          </div>
+          <label class="checkbox-group">
+            <input type="checkbox" id="exitMember">
+            <span>Member (10% discount on total charge)</span>
+          </label>
+          <button type="submit" class="btn-submit">Calculate &amp; Exit</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Tab 4: Slot Config -->
+    <section id="pane-config" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">Parking Capacity Configuration</h2>
+        <form onsubmit="handleConfigSubmit(event)">
+          <div class="form-group">
+            <label for="cfgBikes">Bike Slots Capacity (0 to 100)</label>
+            <input type="number" id="cfgBikes" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label for="cfgCars">Car Slots Capacity (0 to 100)</label>
+            <input type="number" id="cfgCars" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label for="cfgTrucks">Truck Slots Capacity (0 to 100)</label>
+            <input type="number" id="cfgTrucks" min="0" max="100" required>
+          </div>
+          <button type="submit" class="btn-submit">Apply Configuration</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Tab 5: Report -->
+    <section id="pane-report" class="tab-pane">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 class="card-title" style="margin-bottom:0;">Today's Parking Report</h2>
+          <button class="btn-reset" onclick="renderReport()" style="background:#F1F5F9; color:var(--text); border-color:var(--border);">Refresh Report</button>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Vehicles Parked Today</div>
+            <div class="stat-value" id="statParkedToday">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue Today</div>
+            <div class="stat-value" id="statRevenueToday">Rs. 0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Currently Parked (Active)</div>
+            <div class="stat-value" id="statCurrentlyActive">0</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;">Breakdown by Vehicle Type</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vehicle Type</th>
+                  <th>Vehicles Parked</th>
+                  <th>Revenue Collected</th>
+                </tr>
+              </thead>
+              <tbody id="breakdownTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 8px;">Today's Tickets Audit Log (Click headers to sort)</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortTicketTable(0)">Ticket ID &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(1)">Vehicle No &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(2)">Owner &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(3)">Type &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(4)">Slot &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(5)">Entry Time &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(6)">Exit Time &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(7)">Fee &#x25B4;&#x25BE;</th>
+                  <th onclick="sortTicketTable(8)">Status &#x25B4;&#x25BE;</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Generic Modal -->
+  <div id="appModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Modal Title</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-actions" id="modalActions">
+        <button class="btn-submit" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Data Model and Storage ---
+    const STORAGE_KEY = 'parkingDemoV1';
+    const RATES = { BIKE: 10.0, CAR: 20.0, TRUCK: 40.0 };
+    const MEMBER_DISCOUNT = 0.10;
+    const PLATE_REGEX = /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$/;
+    const OWNER_REGEX = /^[a-zA-Z. ]{2,50}$/;
+
+    let state = {
+      slots: [],
+      vehicles: [],
+      tickets: [],
+      nextTicketId: 1
+    };
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          state = JSON.parse(saved);
+          return;
+        } catch (e) {
+          console.error("Failed to parse saved state:", e);
+        }
+      }
+      seedInitialState();
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function seedInitialState() {
+      state = {
+        slots: [],
+        vehicles: [],
+        tickets: [],
+        nextTicketId: 1
+      };
+      // 10 Bike, 10 Car, 5 Truck
+      for (let i = 1; i <= 10; i++) {
+        state.slots.push({ id: state.slots.length + 1, number: 'B-' + String(i).padStart(2, '0'), type: 'BIKE', occupied: false });
+      }
+      for (let i = 1; i <= 10; i++) {
+        state.slots.push({ id: state.slots.length + 1, number: 'C-' + String(i).padStart(2, '0'), type: 'CAR', occupied: false });
+      }
+      for (let i = 1; i <= 5; i++) {
+        state.slots.push({ id: state.slots.length + 1, number: 'T-' + String(i).padStart(2, '0'), type: 'TRUCK', occupied: false });
+      }
+      saveState();
+    }
+
+    function resetDemoData() {
+      if (confirm("Are you sure you want to reset all demo parking data to defaults?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        seedInitialState();
+        renderAll();
+        alert("Demo data has been reset to defaults (10 Bikes, 10 Cars, 5 Trucks).");
+      }
+    }
+
+    // --- Validation and Fee Calculation (Matches Java 100%) ---
+    function normalizeVehicleNumber(raw) {
+      if (!raw) return '';
+      return raw.trim().toUpperCase().replace(/[\s-]+/g, '');
+    }
+
+    function calculateBillableHours(minutes) {
+      if (minutes <= 0) return 1;
+      return Math.max(1, Math.ceil(minutes / 60));
+    }
+
+    function calculateFee(minutes, type, isMember = false) {
+      const hours = calculateBillableHours(minutes);
+      const rate = RATES[type] || 20.0;
+      const baseFee = hours * rate;
+      if (isMember) {
+        return baseFee - (baseFee * MEMBER_DISCOUNT);
+      }
+      return baseFee;
+    }
+
+    // --- UI Tab Management ---
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn'))
+        .find(b => b.textContent.toLowerCase().includes(tabName.toLowerCase()));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const activePane = document.getElementById('pane-' + tabName);
+      if (activePane) activePane.classList.add('active');
+
+      if (tabName === 'dashboard') renderDashboard();
+      if (tabName === 'config') populateConfigForm();
+      if (tabName === 'report') renderReport();
+    }
+
+    // --- UI Renderers ---
+    function renderAll() {
+      updateOccupancyHeader();
+      renderDashboard();
+      populateConfigForm();
+      renderReport();
+    }
+
+    function updateOccupancyHeader() {
+      const total = state.slots.length;
+      const occupied = state.slots.filter(s => s.occupied).length;
+      const free = total - occupied;
+      document.getElementById('occupancyCounter').textContent = `Free ${free} / Occupied ${occupied} / Total ${total}`;
+    }
+
+    function renderDashboard() {
+      updateOccupancyHeader();
+      const bikeGrid = document.getElementById('bikeGrid');
+      const carGrid = document.getElementById('carGrid');
+      const truckGrid = document.getElementById('truckGrid');
+
+      bikeGrid.innerHTML = '';
+      carGrid.innerHTML = '';
+      truckGrid.innerHTML = '';
+
+      const bikes = state.slots.filter(s => s.type === 'BIKE');
+      const cars = state.slots.filter(s => s.type === 'CAR');
+      const trucks = state.slots.filter(s => s.type === 'TRUCK');
+
+      document.getElementById('bikeCountSummary').textContent = `${bikes.length} slots (${bikes.filter(s => !s.occupied).length} free)`;
+      document.getElementById('carCountSummary').textContent = `${cars.length} slots (${cars.filter(s => !s.occupied).length} free)`;
+      document.getElementById('truckCountSummary').textContent = `${trucks.length} slots (${trucks.filter(s => !s.occupied).length} free)`;
+
+      renderSlotButtons(bikeGrid, bikes);
+      renderSlotButtons(carGrid, cars);
+      renderSlotButtons(truckGrid, trucks);
+    }
+
+    function renderSlotButtons(container, slots) {
+      slots.forEach(slot => {
+        const div = document.createElement('div');
+        div.className = `slot-cell ${slot.occupied ? 'occupied' : 'free'}`;
+        div.textContent = slot.number;
+        div.title = `Slot ${slot.number} (${slot.type}) - ${slot.occupied ? 'OCCUPIED' : 'AVAILABLE'}`;
+
+        let clickTimeout = null;
+        div.addEventListener('click', () => {
+          if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+            // Double click: if occupied, jump to exit
+            if (slot.occupied) {
+              const activeTicket = state.tickets.find(t => t.slotNumber === slot.number && t.status === 'ACTIVE');
+              if (activeTicket) {
+                switchTab('exit');
+                document.getElementById('exitQuery').value = activeTicket.vehicleNumber;
+                document.getElementById('exitMember').checked = false;
+              }
+            }
+          } else {
+            clickTimeout = setTimeout(() => {
+              clickTimeout = null;
+              showSlotDetails(slot);
+            }, 250);
+          }
+        });
+
+        container.appendChild(div);
+      });
+    }
+
+    function showSlotDetails(slot) {
+      if (!slot.occupied) {
+        openModal(`Slot Details - ${slot.number}`, `
+          <div class="receipt-line"><span>Slot Number:</span><strong>${slot.number}</strong></div>
+          <div class="receipt-line"><span>Vehicle Type:</span><strong>${slot.type}</strong></div>
+          <div class="receipt-line"><span>Status:</span><span style="color:var(--free-color); font-weight:700;">AVAILABLE</span></div>
+          <div class="receipt-line"><span>Hourly Rate:</span><strong>Rs. ${RATES[slot.type].toFixed(2)}/hr</strong></div>
+        `);
+        return;
+      }
+
+      const ticket = state.tickets.find(t => t.slotNumber === slot.number && t.status === 'ACTIVE');
+      if (!ticket) {
+        openModal(`Slot Details - ${slot.number}`, `<p>Slot is marked occupied.</p>`);
+        return;
+      }
+
+      const entryTime = new Date(ticket.entryTime);
+      const now = new Date();
+      const minutes = Math.max(0, Math.floor((now - entryTime) / 60000));
+      const hours = calculateBillableHours(minutes);
+      const runningFee = hours * RATES[slot.type];
+
+      openModal(`Slot Details - ${slot.number}`, `
+        <div class="receipt-line"><span>Slot Number:</span><strong>${slot.number}</strong></div>
+        <div class="receipt-line"><span>Vehicle Type:</span><strong>${slot.type}</strong></div>
+        <div class="receipt-line"><span>Status:</span><span style="color:var(--occupied-color); font-weight:700;">OCCUPIED</span></div>
+        <div class="receipt-line"><span>Vehicle Number:</span><strong>${ticket.vehicleNumber}</strong></div>
+        <div class="receipt-line"><span>Owner Name:</span><strong>${ticket.ownerName}</strong></div>
+        <div class="receipt-line"><span>Entry Time:</span><strong>${entryTime.toLocaleString()}</strong></div>
+        <div class="receipt-line"><span>Parked Duration:</span><strong>${minutes} min (${hours} billable hr)</strong></div>
+        <div class="receipt-line receipt-total"><span>Current Running Fee:</span><span>Rs. ${runningFee.toFixed(2)}</span></div>
+      `, [
+        {
+          text: 'Check-Out This Vehicle',
+          action: () => {
+            closeModal();
+            switchTab('exit');
+            document.getElementById('exitQuery').value = ticket.vehicleNumber;
+          }
+        },
+        { text: 'Close', action: closeModal }
+      ]);
+    }
+
+    // --- Entry Handler ---
+    function handleParkSubmit(e) {
+      e.preventDefault();
+      const rawPlate = document.getElementById('entryPlate').value;
+      const rawOwner = document.getElementById('entryOwner').value;
+      const type = document.getElementById('entryType').value;
+
+      const plate = normalizeVehicleNumber(rawPlate);
+      if (!PLATE_REGEX.test(plate)) {
+        alert("Invalid vehicle number '" + rawPlate.trim() + "'. Must match format: 2-letter state code + 1-2 digit district + 1-3 letters + 4 digits (e.g., PB65AB1234, DL01C1234).");
+        return;
+      }
+
+      const owner = rawOwner.trim();
+      if (!OWNER_REGEX.test(owner)) {
+        alert("Invalid owner name '" + owner + "'. Must be 2 to 50 characters long and contain only letters, dots, and spaces.");
+        return;
+      }
+
+      // Check if duplicate active vehicle
+      const alreadyParked = state.tickets.some(t => t.vehicleNumber === plate && t.status === 'ACTIVE');
+      if (alreadyParked) {
+        alert("Vehicle " + plate + " is already parked with an active ticket.");
+        return;
+      }
+
+      // Allot lowest slot_id free slot of matching type
+      const freeSlot = state.slots
+        .filter(s => s.type === type && !s.occupied)
+        .sort((a, b) => a.id - b.id)[0];
+
+      if (!freeSlot) {
+        alert("Sorry, parking is currently full for " + type + " vehicles.\nPlease wait for a slot to become available or adjust slot capacity.");
+        return;
+      }
+
+      // Park vehicle
+      freeSlot.occupied = true;
+      const ticketId = state.nextTicketId++;
+      const nowIso = new Date().toISOString();
+
+      const newTicket = {
+        id: ticketId,
+        vehicleNumber: plate,
+        ownerName: owner,
+        type: type,
+        slotNumber: freeSlot.number,
+        entryTime: nowIso,
+        exitTime: null,
+        fee: null,
+        status: 'ACTIVE'
+      };
+      state.tickets.push(newTicket);
+      saveState();
+
+      // Clear form
+      document.getElementById('entryPlate').value = '';
+      document.getElementById('entryOwner').value = '';
+
+      renderAll();
+
+      openModal("Parking Ticket - Success", `
+        <div style="text-align: center; margin-bottom: 12px; color: var(--free-color); font-weight: 700;">Parking Ticket Issued Successfully!</div>
+        <div class="receipt-line"><span>Ticket ID:</span><strong>#${ticketId}</strong></div>
+        <div class="receipt-line"><span>Vehicle Number:</span><strong>${plate}</strong></div>
+        <div class="receipt-line"><span>Owner Name:</span><strong>${owner}</strong></div>
+        <div class="receipt-line"><span>Vehicle Type:</span><strong>${type}</strong></div>
+        <div class="receipt-line"><span>Assigned Slot:</span><strong>${freeSlot.number}</strong></div>
+        <div class="receipt-line"><span>Entry Time:</span><strong>${new Date(nowIso).toLocaleString()}</strong></div>
+      `);
+    }
+
+    // --- Exit Handler ---
+    function handleExitSubmit(e) {
+      e.preventDefault();
+      const query = document.getElementById('exitQuery').value.trim();
+      const isMember = document.getElementById('exitMember').checked;
+
+      if (!query) {
+        alert("Please provide a vehicle number or ticket ID.");
+        return;
+      }
+
+      let ticket = null;
+      if (/^[0-9]+$/.test(query)) {
+        const id = parseInt(query, 10);
+        ticket = state.tickets.find(t => t.id === id && t.status === 'ACTIVE');
+      } else {
+        const plate = normalizeVehicleNumber(query);
+        ticket = state.tickets.find(t => t.vehicleNumber === plate && t.status === 'ACTIVE');
+      }
+
+      if (!ticket) {
+        alert("No active parking ticket found for: '" + query + "'.");
+        return;
+      }
+
+      const now = new Date();
+      const entryTime = new Date(ticket.entryTime);
+      const durationMinutes = Math.max(0, Math.floor((now - entryTime) / 60000));
+      const billableHours = calculateBillableHours(durationMinutes);
+      const rate = RATES[ticket.type];
+      const baseFee = billableHours * rate;
+      const totalFee = calculateFee(durationMinutes, ticket.type, isMember);
+      const discountAmount = baseFee - totalFee;
+
+      // Complete ticket
+      ticket.exitTime = now.toISOString();
+      ticket.fee = totalFee;
+      ticket.status = 'COMPLETED';
+
+      // Free slot
+      const slot = state.slots.find(s => s.number === ticket.slotNumber);
+      if (slot) {
+        slot.occupied = false;
+      }
+      saveState();
+
+      // Clear input
+      document.getElementById('exitQuery').value = '';
+      document.getElementById('exitMember').checked = false;
+
+      renderAll();
+
+      openModal("Departure Receipt - Payment Settled", `
+        <div style="font-family: monospace; font-size: 0.85rem;">
+          <div class="receipt-line"><span>Ticket ID:</span><strong>#${ticket.id}</strong></div>
+          <div class="receipt-line"><span>Vehicle Number:</span><strong>${ticket.vehicleNumber}</strong></div>
+          <div class="receipt-line"><span>Owner Name:</span><strong>${ticket.ownerName}</strong></div>
+          <div class="receipt-line"><span>Vehicle Type:</span><strong>${ticket.type}</strong></div>
+          <div class="receipt-line"><span>Slot Allocated:</span><strong>${ticket.slotNumber}</strong></div>
+          <hr style="margin: 8px 0; border: none; border-top: 1px dashed var(--border);">
+          <div class="receipt-line"><span>Entry Time:</span><strong>${entryTime.toLocaleString()}</strong></div>
+          <div class="receipt-line"><span>Exit Time:</span><strong>${now.toLocaleString()}</strong></div>
+          <div class="receipt-line"><span>Duration:</span><strong>${durationMinutes} minute(s)</strong></div>
+          <div class="receipt-line"><span>Billable Hours:</span><strong>${billableHours} hour(s)</strong></div>
+          <div class="receipt-line"><span>Hourly Rate:</span><strong>Rs. ${rate.toFixed(2)}</strong></div>
+          <div class="receipt-line"><span>Discount:</span><strong>Rs. ${discountAmount.toFixed(2)} (${isMember ? 'Member 10%' : 'None'})</strong></div>
+          <div class="receipt-line receipt-total"><span>TOTAL AMOUNT DUE:</span><span>Rs. ${totalFee.toFixed(2)}</span></div>
+        </div>
+      `);
+    }
+
+    // --- Slot Config Handler ---
+    function populateConfigForm() {
+      const bikes = state.slots.filter(s => s.type === 'BIKE').length;
+      const cars = state.slots.filter(s => s.type === 'CAR').length;
+      const trucks = state.slots.filter(s => s.type === 'TRUCK').length;
+
+      document.getElementById('cfgBikes').value = bikes;
+      document.getElementById('cfgCars').value = cars;
+      document.getElementById('cfgTrucks').value = trucks;
+    }
+
+    function handleConfigSubmit(e) {
+      e.preventDefault();
+      const targetBikes = parseInt(document.getElementById('cfgBikes').value, 10);
+      const targetCars = parseInt(document.getElementById('cfgCars').value, 10);
+      const targetTrucks = parseInt(document.getElementById('cfgTrucks').value, 10);
+
+      try {
+        adjustSlotsForType('BIKE', targetBikes, 'B');
+        adjustSlotsForType('CAR', targetCars, 'C');
+        adjustSlotsForType('TRUCK', targetTrucks, 'T');
+        saveState();
+        renderAll();
+        alert("Slot configuration applied successfully!\nBikes: " + targetBikes + " | Cars: " + targetCars + " | Trucks: " + targetTrucks);
+      } catch (err) {
+        alert("Configuration Refused: " + err.message);
+        populateConfigForm();
+      }
+    }
+
+    function adjustSlotsForType(type, targetCount, prefix) {
+      const current = state.slots.filter(s => s.type === type);
+      const count = current.length;
+      if (targetCount === count) return;
+
+      if (targetCount > count) {
+        const toAdd = targetCount - count;
+        let maxIndex = 0;
+        current.forEach(s => {
+          const num = parseInt(s.number.replace(/[^0-9]/g, ''), 10);
+          if (num > maxIndex) maxIndex = num;
+        });
+
+        for (let i = 1; i <= toAdd; i++) {
+          const idx = maxIndex + i;
+          const slotNum = prefix + '-' + String(idx).padStart(2, '0');
+          state.slots.push({
+            id: state.slots.length + 1,
+            number: slotNum,
+            type: type,
+            occupied: false
+          });
+        }
+      } else {
+        const toRemove = count - targetCount;
+        const sortedDesc = [...current].sort((a, b) => {
+          const na = parseInt(a.number.replace(/[^0-9]/g, ''), 10);
+          const nb = parseInt(b.number.replace(/[^0-9]/g, ''), 10);
+          return nb - na;
+        });
+
+        const candidates = [];
+        for (const s of sortedDesc) {
+          if (candidates.length === toRemove) break;
+          if (s.occupied) continue;
+          // Check ticket history
+          const hasHistory = state.tickets.some(t => t.slotNumber === s.number);
+          if (hasHistory) {
+            throw new Error(`Cannot delete slot ${s.number} because it has past parking ticket history. Slot configuration unchanged.`);
+          }
+          candidates.push(s);
+        }
+
+        if (candidates.length < toRemove) {
+          throw new Error(`Cannot reduce ${type} slots from ${count} to ${targetCount}: only ${candidates.length} free slot(s) without ticket history available for removal.`);
+        }
+
+        // Delete candidate slots
+        state.slots = state.slots.filter(s => !candidates.includes(s));
+      }
+    }
+
+    // --- Report Generator ---
+    let sortCol = 0;
+    let sortAsc = false;
+
+    function renderReport() {
+      const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const allTodayTickets = state.tickets.filter(t => {
+        const entryDate = t.entryTime.slice(0, 10);
+        const exitDate = t.exitTime ? t.exitTime.slice(0, 10) : '';
+        return entryDate === todayStr || exitDate === todayStr;
+      });
+
+      let totalParkedToday = 0;
+      let totalRevenueToday = 0.0;
+      const activeCount = state.slots.filter(s => s.occupied).length;
+
+      const countByType = { BIKE: 0, CAR: 0, TRUCK: 0 };
+      const revenueByType = { BIKE: 0.0, CAR: 0.0, TRUCK: 0.0 };
+
+      allTodayTickets.forEach(t => {
+        if (t.entryTime.slice(0, 10) === todayStr) {
+          totalParkedToday++;
+          countByType[t.type] = (countByType[t.type] || 0) + 1;
+        }
+        if (t.status === 'COMPLETED' && t.exitTime && t.exitTime.slice(0, 10) === todayStr && t.fee != null) {
+          totalRevenueToday += t.fee;
+          revenueByType[t.type] = (revenueByType[t.type] || 0) + t.fee;
+        }
+      });
+
+      document.getElementById('statParkedToday').textContent = totalParkedToday;
+      document.getElementById('statRevenueToday').textContent = 'Rs. ' + totalRevenueToday.toFixed(2);
+      document.getElementById('statCurrentlyActive').textContent = activeCount;
+
+      // Breakdown Table
+      const breakdownBody = document.getElementById('breakdownTableBody');
+      breakdownBody.innerHTML = '';
+      ['BIKE', 'CAR', 'TRUCK'].forEach(type => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${type}</strong></td>
+          <td>${countByType[type]}</td>
+          <td>Rs. ${revenueByType[type].toFixed(2)}</td>
+        `;
+        breakdownBody.appendChild(tr);
+      });
+
+      // Tickets Audit Table
+      renderTicketRows(allTodayTickets);
+    }
+
+    function renderTicketRows(tickets) {
+      const sorted = [...tickets].sort((a, b) => {
+        let valA, valB;
+        switch (sortCol) {
+          case 0: valA = a.id; valB = b.id; break;
+          case 1: valA = a.vehicleNumber; valB = b.vehicleNumber; break;
+          case 2: valA = a.ownerName; valB = b.ownerName; break;
+          case 3: valA = a.type; valB = b.type; break;
+          case 4: valA = a.slotNumber; valB = b.slotNumber; break;
+          case 5: valA = a.entryTime; valB = b.entryTime; break;
+          case 6: valA = a.exitTime || ''; valB = b.exitTime || ''; break;
+          case 7: valA = a.fee || 0; valB = b.fee || 0; break;
+          case 8: valA = a.status; valB = b.status; break;
+          default: valA = a.id; valB = b.id;
+        }
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+      });
+
+      const body = document.getElementById('ticketsTableBody');
+      body.innerHTML = '';
+      if (sorted.length === 0) {
+        body.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:20px;">No parking activity recorded yet today.</td></tr>`;
+        return;
+      }
+
+      sorted.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${t.id}</td>
+          <td><strong>${t.vehicleNumber}</strong></td>
+          <td>${t.ownerName}</td>
+          <td>${t.type}</td>
+          <td>${t.slotNumber}</td>
+          <td>${new Date(t.entryTime).toLocaleTimeString()}</td>
+          <td>${t.exitTime ? new Date(t.exitTime).toLocaleTimeString() : '<span style="color:var(--occupied-color);">-- Parked --</span>'}</td>
+          <td>${t.fee != null ? 'Rs. ' + t.fee.toFixed(2) : '--'}</td>
+          <td><span class="badge-pill ${t.status === 'ACTIVE' ? 'badge-occupied' : 'badge-available'}">${t.status}</span></td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function sortTicketTable(colIdx) {
+      if (sortCol === colIdx) {
+        sortAsc = !sortAsc;
+      } else {
+        sortCol = colIdx;
+        sortAsc = true;
+      }
+      renderReport();
+    }
+
+    // --- Modal Management ---
+    function openModal(title, bodyHtml, actionButtons) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').innerHTML = bodyHtml;
+      const actionsContainer = document.getElementById('modalActions');
+      actionsContainer.innerHTML = '';
+
+      if (actionButtons && actionButtons.length > 0) {
+        actionButtons.forEach(btn => {
+          const b = document.createElement('button');
+          b.className = 'btn-submit';
+          b.textContent = btn.text;
+          b.onclick = btn.action;
+          actionsContainer.appendChild(b);
+        });
+      } else {
+        const b = document.createElement('button');
+        b.className = 'btn-submit';
+        b.textContent = 'Close';
+        b.onclick = closeModal;
+        actionsContainer.appendChild(b);
+      }
+
+      document.getElementById('appModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('appModal').classList.remove('active');
+    }
+
+    // Auto-refresh running durations on dashboard every 5 seconds
+    setInterval(() => {
+      const dashboardPane = document.getElementById('pane-dashboard');
+      if (dashboardPane && dashboardPane.classList.contains('active')) {
+        updateOccupancyHeader();
+      }
+    }, 5000);
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderAll();
+    });
+  </script>
+</body>
+</html>
