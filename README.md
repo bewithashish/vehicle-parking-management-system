@@ -25,8 +25,8 @@ A robust, multi-threaded Desktop and Web application designed to automate vehicl
 ---
 
 ## 🌐 Live Web Demo & Releases
-- **Live Deployed Web Demo (GitHub Pages)**: [https://<GITHUB_USERNAME>.github.io/vehicle-parking-management-system/](https://<GITHUB_USERNAME>.github.io/vehicle-parking-management-system/)
-- **Executable Desktop Fat JAR Release**: [Download v1.0 JAR](https://github.com/<GITHUB_USERNAME>/vehicle-parking-management-system/releases/latest)
+- **Live Deployed Web Demo (GitHub Pages)**: [https://bewithashish.github.io/vehicle-parking-management-system/](https://bewithashish.github.io/vehicle-parking-management-system/)
+- **Executable Desktop Fat JAR Release**: [Download v1.0 JAR](https://github.com/bewithashish/vehicle-parking-management-system/releases/latest)
 
 ---
 
@@ -163,7 +163,7 @@ CREATE TABLE parking_tickets (
 ### 1. Build and Run via Maven
 ```bash
 # Clone the repository
-git clone https://github.com/<GITHUB_USERNAME>/vehicle-parking-management-system.git
+git clone https://github.com/bewithashish/vehicle-parking-management-system.git
 cd vehicle-parking-management-system
 
 # Clean compile, execute test suite, and package fat JAR

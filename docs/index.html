@@ -450,7 +450,7 @@
         <p>Team: Ashish (Leader, UID 2510001259), Samar (2510001222), Chandni (2510001296), Lakshay (2510001216) | Course: CSE2003 OOP using JAVA</p>
       </div>
       <div class="banner-actions">
-        <a id="downloadJarBtn" href="https://github.com/akash-kumar-2005/vehicle-parking-management-system/releases/latest" class="btn-download" target="_blank">Download Desktop App (JAR)</a>
+        <a id="downloadJarBtn" href="https://github.com/bewithashish/vehicle-parking-management-system/releases/latest" class="btn-download" target="_blank">Download Desktop App (JAR)</a>
         <button id="resetDemoBtn" class="btn-reset" onclick="resetDemoData()">Reset demo data</button>
       </div>
     </div>
@@ -1240,6 +1240,12 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadState();
       renderAll();
+      if (window.location.hash) {
+        const hashTab = window.location.hash.replace('#', '').toLowerCase();
+        if (['dashboard', 'entry', 'exit', 'config', 'report'].includes(hashTab)) {
+          switchTab(hashTab);
+        }
+      }
     });
   </script>
 </body>
